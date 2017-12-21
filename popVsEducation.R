@@ -1,16 +1,10 @@
----
-title: "HW 7 Notebook"
-output: html_notebook
----
-```{r}
+#Install needed package.
 install.packages("stringi")
-```
-```{r}
+
+#Load needed libraries.
 library(stringi)
 library(ggplot2)
-```
 
-```{r}
 #Read in main data set. Subset with only the relevant columns.
 dataSet <- read.table("DataSet.txt", header = TRUE, sep = ",")
 dataSet <- subset(dataSet, select = c("fips","PST045213","EDU635212"))
@@ -28,17 +22,9 @@ dataSet <- na.omit(dataSet)
 countyCodes <- read.fwf("FIPS_CountyName.txt", skip = 1, widths = (c(5, 38)))
 countyCodes[, "state"] <- c(stri_sub(countyCodes[,2], -2, -1))
 
-
-```
-
-```{r}
 #Map county code in dataSet to countyCodes, and replace dataSet's county codes with state acronyms.
 dataSet$`County Code` <- with(countyCodes, countyCodes$state[match(dataSet$`County Code`, countyCodes$V1)])
 
-```
-
-```{r}
 #Plot as a scatterplot with facets.  Set X and Y axis labels, remove legend, add in linear best fit line.
 graph <- ggplot(data = dataSet, aes(dataSet$`High School Educated People`, dataSet$`2013 Population`)) + geom_point(aes(colour = factor(dataSet$`County Code`)))
 graph + facet_wrap(~dataSet$`County Code`) + theme(legend.position = "none") + stat_smooth(method = "lm") + labs(x = "Percent of Population High School Educated", y = "2013 County Population", title = "Population vs. Education")
-```
